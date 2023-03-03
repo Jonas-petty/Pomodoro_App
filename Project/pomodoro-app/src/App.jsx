@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { createContext, useEffect, useRef, useState } from 'react'
 import Timer from './Components/Timer'
 import Modes from './Components/Modes'
 import Settings from './Components/Settings'
@@ -6,15 +6,31 @@ import './App.css'
 
 
 function App() {
-  const [ minutes, setMinutes ] = useState(60)
+  const MinutesContext = createContext({}) 
+
+  const [ workMinutes, setWorkMinutes ] = useState(25)
+  const [ shortBreakMinutes, setShortBreakMinutes ] = useState(5)
+  const [ longBreakMinutes, setLongBreakMinutes ] = useState(15)
+
   return (
     <div className="App">
       <h1>pomodoro</h1>
-      {/* <Modes /> */}
-      <Timer 
-        value={minutes}
-      />
-      <Settings />
+      <MinutesContext.Provider value={{
+        workMinutes,
+        shortBreakMinutes,
+        longBreakMinutes,
+        setWorkMinutes,
+        setShortBreakMinutes,
+        setLongBreakMinutes
+      }}>
+        {/* <Modes /> */}
+        <Timer 
+          MinutesContext={MinutesContext}
+        />
+        <Settings 
+          MinutesContext={MinutesContext}
+        />
+      </MinutesContext.Provider>
     </div>
   )
 }

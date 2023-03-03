@@ -1,4 +1,4 @@
-import React from "react";
+import { React, useContext, useState } from "react";
 import Popup from 'reactjs-popup'
 import 'reactjs-popup/dist/index.css'
 import styled from "styled-components";
@@ -6,12 +6,29 @@ import styled from "styled-components";
 import settingsIcon from '../assets/settingsIcon.svg'
 
 const SettingsButton = styled.button`
-cursor: pointer;
+    cursor: pointer;
     background-color: transparent;
-    border: 0;
+    border: 0;    
+`
 
-    /* margin-top: 5rem; */
-    
+const ApplyButton = styled.button`
+    cursor: pointer;
+    position: absolute;
+    margin: 0 auto;
+    padding: 10px;
+    bottom: -20px;
+    left: 0;
+    right: 0;
+    width: 7rem;
+
+    background-color: #F67271;
+    color: #FFF;
+    font-size: 1rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1rem;
+
+    border: 0;
+    border-radius: 50px;
 `
 
 const StyledPopup = styled(Popup)`
@@ -100,7 +117,19 @@ const StyledPopup = styled(Popup)`
     }
 `
 
-function Settings() {
+function Settings({ MinutesContext }) {    
+    const minutesInfo = useContext(MinutesContext)
+
+    const [ currentWorkMinutes, setCurrentWorkMinutes ] = useState(minutesInfo.workMinutes)
+    const [ currentShortBreakMinutes, setCurrentShortBreakMinutes ] = useState(minutesInfo.shortBreakMinutes)
+    const [ currentLongBreakMinutes, setCurrentLongBreakMinutes ] = useState(minutesInfo.shortBreakMinutes)
+
+    function ApplyMinutes() {
+        minutesInfo.setWorkMinutes(currentWorkMinutes)
+        minutesInfo.setShortBreakMinutes(currentShortBreakMinutes)
+        minutesInfo.setLongBreakMinutes(currentLongBreakMinutes)
+    }
+
     return (
         <StyledPopup trigger={<SettingsButton><img src={settingsIcon} alt="Settings Icon" /></SettingsButton>}
         position="center"
@@ -117,19 +146,31 @@ function Settings() {
                         <div className="inputs">
                             <div className="input">
                                 <label htmlFor="pomodoro">pomodoro</label>
-                                <input type="number" name="pomodoro" id="pomodoro" defaultValue={25} />
+                                <input type="number" name="pomodoro" id="pomodoro"
+                                    defaultValue={minutesInfo.workMinutes}
+                                    onChange={event => setCurrentWorkMinutes(event.target.value)}    
+                                />
                             </div>
 
                             <div className="input">
                                 <label htmlFor="short_break">pausa curta</label>
-                                <input type="number" name="short_break" id="short_break" defaultValue={5} />
+                                <input type="number" name="short_break" id="short_break"
+                                    defaultValue={minutesInfo.shortBreakMinutes}
+                                    onChange={event => setCurrentShortBreakMinutes(event.target.value)}    
+                                />
                             </div>
 
                             <div className="input">
                                 <label htmlFor="long_break">pausa longa</label>
-                                <input type="number" name="long_break" id="long_break" defaultValue={15} />
+                                <input type="number" name="long_break" id="long_break"
+                                    defaultValue={minutesInfo.longBreakMinutes}
+                                    onChange={event => setCurrentLongBreakMinutes(event.target.value)}    
+                                />
                             </div>
                         </div>
+                    </div>
+                    <div className="footer">
+                    <ApplyButton onClick={() => ApplyMinutes()}>Aplicar</ApplyButton>
                     </div>
                 </>
             )}
