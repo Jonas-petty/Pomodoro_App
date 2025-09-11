@@ -1,31 +1,48 @@
 const timer = document.querySelector("#time-content");
 
-const POMODORO = 25;
-const SHORT_BREAK = 5;
-const LONG_BREAK = 15;
+let pomodoro = 10;
+let shortBreak = 2;
+let longBreak = 5;
 
-function startTimer(minutes, seconds) {
-    let timerIntervalID = setInterval(() => {
-        timer.textContent = `${minutes < 10 ? `0${minutes}` : minutes}: ${
-            seconds < 10 ? `0${seconds}` : seconds
-        }`;
+async function startTimer(minutes = 0, seconds = 0) {
+    return new Promise((resolve) => {
+        let timerIntervalID = setInterval(() => {
+            timer.textContent = `${minutes < 10 ? `0${minutes}` : minutes}: ${
+                seconds < 10 ? `0${seconds}` : seconds
+            }`;
 
-        if (seconds <= 0 && minutes <= 0) {
-            console.log(minutes, seconds);
-            clearInterval(timerIntervalID);
-        }
+            if (seconds <= 0 && minutes <= 0) {
+                clearInterval(timerIntervalID);
+                resolve();
+            }
 
-        if (seconds <= 0) {
-            minutes -= 1;
-            seconds = 60;
-        }
-        seconds--;
-    }, 1000);
+            if (seconds <= 0) {
+                minutes -= 1;
+                seconds = 60;
+            }
+            seconds--;
+        }, 1000);
+    });
 }
 
-document.addEventListener("DOMContentLoaded", (event) => {
-    let minutes = POMODORO;
-    let seconds = 0;
+document.addEventListener("DOMContentLoaded", async (event) => {
+    let cycles = 0;
+    let isPaused = false;
 
-    startTimer(minutes, seconds);
+    while (!isPaused) {
+        await startTimer(pomodoro, 0);
+        cycles++;
+
+        if (cycles % 4 === 0) {
+            await startTimer(longBreak, 0);
+        } else {
+            await startTimer(shortBreak, 0);
+        }
+    }
 });
+
+// start pomodoro = 25
+// to pomodoro == 0
+// to shot break = 5
+// repeat 4x
+// to long break = 15
