@@ -1,13 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Pomodoro</title>
-</head>
-<body>
-    
-</body>
-<script src="script.js"></script>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="style.css" />
+        <title>Pomodoro</title>
+    </head>
+    <body>
+        <div class="container">
+            <header id="header"><h1>pomodoro</h1></header>
+
+            <div id="status-container">
+                <div id="status-list">
+                    <div class="status active">pomodoro</div>
+                    <div class="status">short break</div>
+                    <div class="status">long break</div>
+                </div>
+            </div>
+
+            <div id="timer-container">
+                <div id="time">
+                    <h2 id="time-content">
+                        00:00
+                    </h2>
+                </div>
+            </div>
+
+            <div id="settings-container">
+                <button id="settings">
+                    settings
+                </button>
+            </div>
+        </div>
+    </body>
+    <script src="script.js"></script>
 </html>
