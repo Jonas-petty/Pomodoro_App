@@ -1,19 +1,50 @@
 const timer = document.querySelector("#time-content");
 
-let pomodoro = 10;
-let shortBreak = 2;
-let longBreak = 5;
+let currentTime = localStorage.getItem("currentTime");
+if (!currentTime) {
+    localStorage.setItem(
+        "currentTime",
+        JSON.stringify({ minutes: 0, seconds: 0 })
+    );
+    currentTime = localStorage.getItem("currentTime");
+}
+currentTime = JSON.parse(currentTime);
 
-async function startTimer(minutes = 0, seconds = 0) {
+let pomodoro = 25;
+let shortBreak = 5;
+let longBreak = 15;
+let isPaused = false;
+let controller = null;
+
+let cycles = Number(localStorage.getItem("cycles") || 0);
+let phase = localStorage.getItem("phase") || "pomodoro";
+
+async function startTimer(minutes = 0, seconds = 0, signal) {
     return new Promise((resolve) => {
         let timerIntervalID = setInterval(() => {
+            if (signal?.aborted) {
+                localStorage.setItem(
+                    "currentTime",
+                    JSON.stringify({ minutes, seconds })
+                );
+                console.log(minutes, seconds);
+                clearInterval(timerIntervalID);
+                resolve("paused");
+                return;
+            }
+
             timer.textContent = `${minutes < 10 ? `0${minutes}` : minutes}: ${
                 seconds < 10 ? `0${seconds}` : seconds
             }`;
 
             if (seconds <= 0 && minutes <= 0) {
                 clearInterval(timerIntervalID);
-                resolve();
+                localStorage.setItem(
+                    "currentTime",
+                    JSON.stringify({ minutes: 0, seconds: 0 })
+                );
+                resolve("done");
+                return;
             }
 
             if (seconds <= 0) {
@@ -25,24 +56,63 @@ async function startTimer(minutes = 0, seconds = 0) {
     });
 }
 
-document.addEventListener("DOMContentLoaded", async (event) => {
-    let cycles = 0;
-    let isPaused = false;
-
+async function runloop() {
     while (!isPaused) {
-        await startTimer(pomodoro, 0);
-        cycles++;
+        controller = controller ?? new AbortController();
 
-        if (cycles % 4 === 0) {
-            await startTimer(longBreak, 0);
+        let ct = JSON.parse(
+            localStorage.getItem("currentTime") || '{"minutes":0,"seconds":0}'
+        );
+        if (ct.minutes > 0 || ct.seconds > 0) {
+            const rr = await startTimer(
+                ct.minutes,
+                ct.seconds,
+                controller.signal
+            );
+            if (rr === "paused" || isPaused) break;
+
+            localStorage.setItem(
+                "currentTime",
+                JSON.stringify({ minutes: 0, seconds: 0 })
+            );
         } else {
-            await startTimer(shortBreak, 0);
+            if (phase === "pomodoro") {
+                const r1 = await startTimer(pomodoro, 0, controller.signal);
+                if (r1 === "paused" || isPaused) break;
+                cycles++;
+                localStorage.setItem("cycles", cycles);
+                phase = cycles % 4 === 0 ? "longBreak" : "shortBreak";
+                localStorage.setItem("phase", phase);
+            } else if (phase === "shortBreak") {
+                const r2 = await startTimer(shortBreak, 0, controller.signal);
+                if (r2 === "paused" || isPaused) break;
+                phase = "pomodoro";
+                localStorage.setItem("phase", phase);
+            } else {
+                const r3 = await startTimer(longBreak, 0, controller.signal);
+                if (r3 === "paused" || isPaused) break;
+                cycles = 0;
+                localStorage.setItem("cycles", cycles);
+                phase = "pomodoro";
+                localStorage.setItem("phase", phase);
+            }
         }
     }
+}
+
+document.addEventListener("DOMContentLoaded", async (event) => {
+    controller = new AbortController();
+    runloop();
 });
 
-// start pomodoro = 25
-// to pomodoro == 0
-// to shot break = 5
-// repeat 4x
-// to long break = 15
+timer.addEventListener("click", (event) => {
+    isPaused = !isPaused;
+
+    if (isPaused) {
+        controller?.abort();
+        controller = null;
+    } else {
+        controller = new AbortController();
+        runloop();
+    }
+});
