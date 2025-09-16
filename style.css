@@ -30,7 +30,6 @@
     align-items: center;
     gap: 1rem;
     border-radius: 2rem;
-
     padding: 0.5rem;
 }
 
@@ -44,4 +43,37 @@
     background-color: var(--scent-color);
     padding: 1rem;
     border-radius: 2rem;
+}
+
+#timer-border {
+    background-image: linear-gradient(
+        125deg,
+        var(--tertiary-color),
+        var(--secondary-color)
+    );
+    padding: 1.5rem;
+
+    box-shadow: -40px -40px 40px var(--secondary-color),
+        40px 40px 40px var(--tertiary-color);
+
+    border-radius: 50%;
+}
+
+#time {
+    cursor: pointer;
+    background-color: var(--tertiary-color);
+    width: 20rem;
+    height: 20rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: inherit;
+}
+
+#time:hover {
+    background-color: var(--primary-color);
+}
+
+#time-content {
+    font-size: 5rem;
 }
