@@ -1,3 +1,47 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    transition: all 0.2s;
+}
+
+:root {
+    --primary-color: #1e2140;
+    --secondary-color: #282c51;
+    --tertiary-color: #151932;
+    --scent-color: #f5706f;
+}
+
+#container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+#status-list {
+    background-color: var(--tertiary-color);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-radius: 2rem;
+
+    padding: 0.5rem;
+}
+
+.status {
+    padding: 1rem;
+    border-radius: 2rem;
+}
+
 .active {
-    background-color: green;
+    color: var(--tertiary-color);
+    background-color: var(--scent-color);
+    padding: 1rem;
+    border-radius: 2rem;
 }
