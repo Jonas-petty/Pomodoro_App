@@ -1,7 +1,6 @@
 const timer = document.querySelector("#time-content");
-let statusList = document.querySelectorAll(".status");
-statusList = [...statusList];
-console.log(statusList);
+const graph = document.querySelector("#graph");
+const statusList = [...document.querySelectorAll(".status")];
 
 let currentTime = localStorage.getItem("currentTime");
 if (!currentTime) {
@@ -22,14 +21,25 @@ let controller = null;
 let cycles = Number(localStorage.getItem("cycles") || 0);
 let phase = localStorage.getItem("phase") || "pomodoro";
 
+function getPhaseTotalSeconds(phase) {
+    if (phase === "pomodoro") return pomodoro * 60;
+    if (phase === "short-break") return shortBreak * 60;
+    return longBreak * 60;
+}
+
+function updateGraph(phase, minutes, seconds) {
+    const total = getPhaseTotalSeconds(phase);
+    const remaining = minutes * 60 + seconds;
+    const elapsed = Math.max(0, total - remaining);
+    let percentage = Math.round((elapsed / total) * 100);
+    percentage = Math.max(0, Math.min(100, percentage));
+    const p = percentage === 0 ? 0.001 : percentage;
+    graph.style.backgroundImage = `conic-gradient(var(--scent-color) 0% ${p}%, transparent ${p}% 100%)`;
+}
+
 function updateActiveStatus() {
     statusList.forEach((status) => {
-        if (status.classList.contains("active"))
-            status.classList.remove("active");
-
-        if (status.classList.contains(phase)) {
-            status.classList.add("active");
-        }
+        status.classList.toggle("active", status.classList.contains(phase));
     });
 }
 
@@ -37,6 +47,7 @@ async function startTimer(minutes = 0, seconds = 0, signal) {
     updateActiveStatus();
 
     return new Promise((resolve) => {
+        updateGraph(phase, minutes, seconds);
         let timerIntervalID = setInterval(() => {
             if (signal?.aborted) {
                 localStorage.setItem(
@@ -49,9 +60,10 @@ async function startTimer(minutes = 0, seconds = 0, signal) {
                 return;
             }
 
-            timer.textContent = `${minutes < 10 ? `0${minutes}` : minutes}: ${
+            timer.textContent = `${minutes < 10 ? `0${minutes}` : minutes}:${
                 seconds < 10 ? `0${seconds}` : seconds
             }`;
+            updateGraph(phase, minutes, seconds);
 
             if (seconds <= 0 && minutes <= 0) {
                 clearInterval(timerIntervalID);
@@ -68,7 +80,7 @@ async function startTimer(minutes = 0, seconds = 0, signal) {
                 seconds = 60;
             }
             seconds--;
-        }, 1);
+        }, 100);
     });
 }
 
@@ -118,6 +130,7 @@ async function runloop() {
 
 document.addEventListener("DOMContentLoaded", async (event) => {
     controller = new AbortController();
+    updateGraph(phase, currentTime.minutes, currentTime.seconds);
     runloop();
 });
 
