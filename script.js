@@ -1,4 +1,7 @@
 const timer = document.querySelector("#time-content");
+let statusList = document.querySelectorAll(".status");
+statusList = [...statusList];
+console.log(statusList);
 
 let currentTime = localStorage.getItem("currentTime");
 if (!currentTime) {
@@ -19,7 +22,20 @@ let controller = null;
 let cycles = Number(localStorage.getItem("cycles") || 0);
 let phase = localStorage.getItem("phase") || "pomodoro";
 
+function updateActiveStatus() {
+    statusList.forEach((status) => {
+        if (status.classList.contains("active"))
+            status.classList.remove("active");
+
+        if (status.classList.contains(phase)) {
+            status.classList.add("active");
+        }
+    });
+}
+
 async function startTimer(minutes = 0, seconds = 0, signal) {
+    updateActiveStatus();
+
     return new Promise((resolve) => {
         let timerIntervalID = setInterval(() => {
             if (signal?.aborted) {
@@ -52,7 +68,7 @@ async function startTimer(minutes = 0, seconds = 0, signal) {
                 seconds = 60;
             }
             seconds--;
-        }, 1000);
+        }, 1);
     });
 }
 
@@ -81,9 +97,9 @@ async function runloop() {
                 if (r1 === "paused" || isPaused) break;
                 cycles++;
                 localStorage.setItem("cycles", cycles);
-                phase = cycles % 4 === 0 ? "longBreak" : "shortBreak";
+                phase = cycles % 4 === 0 ? "long-break" : "short-break";
                 localStorage.setItem("phase", phase);
-            } else if (phase === "shortBreak") {
+            } else if (phase === "short-break") {
                 const r2 = await startTimer(shortBreak, 0, controller.signal);
                 if (r2 === "paused" || isPaused) break;
                 phase = "pomodoro";
