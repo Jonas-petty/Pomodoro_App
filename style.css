@@ -11,6 +11,7 @@
     --secondary-color: #282c51;
     --tertiary-color: #151932;
     --scent-color: #f5706f;
+    --alternative-color: #8285a4;
 }
 
 #container {
@@ -44,6 +45,7 @@
 }
 
 .status {
+    color: var(--alternative-color);
     padding: 1rem;
     border-radius: 2rem;
 }
@@ -70,11 +72,11 @@
 }
 
 #graph {
-    background: conic-gradient(transparent 0% 100%);
+    background-color: var(--tertiary-color);
     padding: 1rem;
     border-radius: inherit;
 
-    border: 1rem solid var(--tertiary-color)
+    border: 1rem solid var(--tertiary-color);
 }
 
 #time {
@@ -94,4 +96,14 @@
 
 #time-content {
     font-size: 5.5rem;
+}
+
+#settings > img {
+    width: 3rem;
+}
+
+#settings > img:hover {
+    
+    /* transform: ; */
+    transform: rotate(180deg) scale(1.1);
 }

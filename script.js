@@ -80,7 +80,7 @@ async function startTimer(minutes = 0, seconds = 0, signal) {
                 seconds = 60;
             }
             seconds--;
-        }, 100);
+        }, 1000);
     });
 }
 
