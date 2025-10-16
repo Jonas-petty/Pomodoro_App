@@ -17,9 +17,14 @@ let shortBreak = 5;
 let longBreak = 15;
 let isPaused = false;
 let controller = null;
+const timerAudio = new Audio("./assets/timer_sound.wav");
 
 let cycles = Number(localStorage.getItem("cycles") || 0);
 let phase = localStorage.getItem("phase") || "pomodoro";
+
+function playTimerAudio(audio) {
+    audio.play();
+}
 
 function getPhaseTotalSeconds(phase) {
     if (phase === "pomodoro") return pomodoro * 60;
@@ -63,6 +68,10 @@ async function startTimer(minutes = 0, seconds = 0, signal) {
             timer.textContent = `${minutes < 10 ? `0${minutes}` : minutes}:${
                 seconds < 10 ? `0${seconds}` : seconds
             }`;
+            if (timer.textContent == "00:00") {
+                pauseTimer()
+                playTimerAudio(timerAudio)
+            }
             updateGraph(phase, minutes, seconds);
 
             if (seconds <= 0 && minutes <= 0) {
@@ -128,7 +137,6 @@ async function runloop() {
     }
 }
 
-
 function pauseTimer() {
     isPaused = !isPaused;
 
@@ -148,5 +156,5 @@ document.addEventListener("DOMContentLoaded", async (event) => {
 });
 
 timer.addEventListener("click", (event) => {
-    pauseTimer()
+    pauseTimer();
 });
