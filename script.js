@@ -128,13 +128,8 @@ async function runloop() {
     }
 }
 
-document.addEventListener("DOMContentLoaded", async (event) => {
-    controller = new AbortController();
-    updateGraph(phase, currentTime.minutes, currentTime.seconds);
-    runloop();
-});
 
-timer.addEventListener("click", (event) => {
+function pauseTimer() {
     isPaused = !isPaused;
 
     if (isPaused) {
@@ -144,4 +139,14 @@ timer.addEventListener("click", (event) => {
         controller = new AbortController();
         runloop();
     }
+}
+
+document.addEventListener("DOMContentLoaded", async (event) => {
+    controller = new AbortController();
+    updateGraph(phase, currentTime.minutes, currentTime.seconds);
+    runloop();
+});
+
+timer.addEventListener("click", (event) => {
+    pauseTimer()
 });
