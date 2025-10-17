@@ -62,9 +62,13 @@ async function startTimer(minutes = 0, seconds = 0, signal) {
                 return;
             }
 
-            timer.textContent = `${minutes < 10 ? `0${minutes}` : minutes}:${
+            let timeContent = `${minutes < 10 ? `0${minutes}` : minutes}:${
                 seconds < 10 ? `0${seconds}` : seconds
             }`;
+
+            timer.textContent = timeContent;
+            document.title = `Pomodoro - ${timeContent}`;
+
             if (timer.textContent == "00:00") {
                 pauseTimer();
                 timerAudio.play();
