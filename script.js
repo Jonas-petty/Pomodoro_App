@@ -18,13 +18,10 @@ let longBreak = 15;
 let isPaused = false;
 let controller = null;
 const timerAudio = new Audio("./assets/timer_sound.wav");
+const clickAudio = new Audio("./assets/click_sound.mp3");
 
 let cycles = Number(localStorage.getItem("cycles") || 0);
 let phase = localStorage.getItem("phase") || "pomodoro";
-
-function playTimerAudio(audio) {
-    audio.play();
-}
 
 function getPhaseTotalSeconds(phase) {
     if (phase === "pomodoro") return pomodoro * 60;
@@ -69,8 +66,8 @@ async function startTimer(minutes = 0, seconds = 0, signal) {
                 seconds < 10 ? `0${seconds}` : seconds
             }`;
             if (timer.textContent == "00:00") {
-                pauseTimer()
-                playTimerAudio(timerAudio)
+                pauseTimer();
+                timerAudio.play();
             }
             updateGraph(phase, minutes, seconds);
 
@@ -156,5 +153,6 @@ document.addEventListener("DOMContentLoaded", async (event) => {
 });
 
 timer.addEventListener("click", (event) => {
+    clickAudio.play();
     pauseTimer();
 });
