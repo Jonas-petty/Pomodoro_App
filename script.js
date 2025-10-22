@@ -69,13 +69,10 @@ async function startTimer(minutes = 0, seconds = 0, signal) {
             timer.textContent = timeContent;
             document.title = `Pomodoro - ${timeContent}`;
 
-            if (timer.textContent == "00:00") {
-                pauseTimer();
-                timerAudio.play();
-            }
             updateGraph(phase, minutes, seconds);
 
             if (seconds <= 0 && minutes <= 0) {
+                timerAudio.play();
                 clearInterval(timerIntervalID);
                 localStorage.setItem(
                     "currentTime",
@@ -90,7 +87,7 @@ async function startTimer(minutes = 0, seconds = 0, signal) {
                 seconds = 60;
             }
             seconds--;
-        }, 1000);
+        }, 1);
     });
 }
 
@@ -121,11 +118,13 @@ async function runloop() {
                 localStorage.setItem("cycles", cycles);
                 phase = cycles % 4 === 0 ? "long-break" : "short-break";
                 localStorage.setItem("phase", phase);
+                updateActiveStatus()
             } else if (phase === "short-break") {
                 const r2 = await startTimer(shortBreak, 0, controller.signal);
                 if (r2 === "paused" || isPaused) break;
                 phase = "pomodoro";
                 localStorage.setItem("phase", phase);
+                updateActiveStatus()
             } else {
                 const r3 = await startTimer(longBreak, 0, controller.signal);
                 if (r3 === "paused" || isPaused) break;
@@ -133,6 +132,7 @@ async function runloop() {
                 localStorage.setItem("cycles", cycles);
                 phase = "pomodoro";
                 localStorage.setItem("phase", phase);
+                updateActiveStatus()
             }
         }
     }
