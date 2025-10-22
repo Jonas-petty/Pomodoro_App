@@ -87,7 +87,7 @@ async function startTimer(minutes = 0, seconds = 0, signal) {
                 seconds = 60;
             }
             seconds--;
-        }, 1000);
+        }, 1);
     });
 }
 
@@ -118,13 +118,15 @@ async function runloop() {
                 localStorage.setItem("cycles", cycles);
                 phase = cycles % 4 === 0 ? "long-break" : "short-break";
                 localStorage.setItem("phase", phase);
-                updateActiveStatus()
+                updateActiveStatus();
+                ShowNotification("OPA! Hora da pausa!")
             } else if (phase === "short-break") {
                 const r2 = await startTimer(shortBreak, 0, controller.signal);
                 if (r2 === "paused" || isPaused) break;
                 phase = "pomodoro";
                 localStorage.setItem("phase", phase);
-                updateActiveStatus()
+                updateActiveStatus();
+                ShowNotification("OPA! Hora de Voltar!")
             } else {
                 const r3 = await startTimer(longBreak, 0, controller.signal);
                 if (r3 === "paused" || isPaused) break;
@@ -132,10 +134,18 @@ async function runloop() {
                 localStorage.setItem("cycles", cycles);
                 phase = "pomodoro";
                 localStorage.setItem("phase", phase);
-                updateActiveStatus()
+                updateActiveStatus();
+                ShowNotification("OPA! Hora de Voltar!")
             }
         }
     }
+}
+
+function ShowNotification(text) {
+    const img = "./assets/favicon.png"
+    // const text = `OI! Olha o tempo!`
+
+    new Notification("Pomodoro", {body: text, icon: img});
 }
 
 function pauseTimer() {
@@ -151,6 +161,7 @@ function pauseTimer() {
 }
 
 document.addEventListener("DOMContentLoaded", async (event) => {
+    pauseTimer()
     controller = new AbortController();
     updateGraph(phase, currentTime.minutes, currentTime.seconds);
     runloop();
@@ -158,5 +169,6 @@ document.addEventListener("DOMContentLoaded", async (event) => {
 
 timer.addEventListener("click", (event) => {
     clickAudio.play();
+    Notification.requestPermission();
     pauseTimer();
 });
